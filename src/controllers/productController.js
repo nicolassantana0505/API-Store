@@ -78,7 +78,7 @@ async function criarProduto(req, res, next) {
 
     if (!resultado.success) {
       return res.status(400).json({
-        erro: resultado.error.errors[0].message,
+        erro: resultado.error.issues[0].message,
       })
     }
 
@@ -104,7 +104,7 @@ async function atualizarProduto(req, res, next) {
 
     if (!resultado.success) {
       return res.status(400).json({
-        erro: resultado.error.errors[0].message,
+        erro: resultado.error.issues[0].message,
       })
     }
 
@@ -120,6 +120,35 @@ async function atualizarProduto(req, res, next) {
     }
 
     res.json(produtoAtualizado)
+  } catch (error) {
+    next(error)
+  }
+}
+
+async function obterImagem(req, res, next) {
+  try {
+    const { id, indice } = req.params
+
+    if (!isValidObjectId(id) || !/^\d+$/.test(indice)) {
+      return res.status(400).json({
+        erro: 'Imagem inválida.',
+      })
+    }
+
+    const imagem = await productService.obterImagem(id, Number(indice))
+
+    if (!imagem) {
+      return res.status(404).json({
+        erro: 'Imagem não encontrada.',
+      })
+    }
+
+    res.set({
+      'Content-Type': imagem.tipo,
+      'Cache-Control': 'public, no-cache', // o navegador revalida (ETag) e só rebaixa se mudou
+      'X-Content-Type-Options': 'nosniff',
+    })
+    res.send(imagem.buffer)
   } catch (error) {
     next(error)
   }
@@ -157,4 +186,5 @@ module.exports = {
   criarProduto,
   atualizarProduto,
   deletarProduto,
+  obterImagem,
 }

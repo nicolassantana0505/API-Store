@@ -18,7 +18,7 @@ connectDatabase();
 
 app.use(cors());
 
-app.use(express.json()); 
+app.use(express.json({ limit: '6mb' })); // fotos dos produtos vão em base64
 
 app.use(logger); //acessa o header da requisição e loga o endpoint (metodo + URL)
 

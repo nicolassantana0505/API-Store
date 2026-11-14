@@ -12,6 +12,8 @@ router.get("/produtos", productController.listarProdutos);
 
 router.get("/produtos/:id", productController.buscarProdutoPorId);
 
+router.get("/produtos/:id/imagens/:indice", productController.obterImagem);
+
 router.post("/produtos", authMiddleware, verificarAdmin, productController.criarProduto);
 
 router.put("/produtos/:id",authMiddleware, productController.atualizarProduto);
